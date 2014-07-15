@@ -5,7 +5,7 @@ class Board
   def self.place_pieces
     blacks = [Castle.new(:B), Knight.new(:B), Bishop.new(:B), Queen.new(:B),
       King.new(:B), Bishop.new(:B), Knight.new(:B), Castle.new(:B)]
-    whites = [Castle.new(:W), Knight.new(:W), Bishop.new(:W), King.new(:B),
+    whites = [Castle.new(:W), Knight.new(:W), Bishop.new(:W), King.new(:W),
       Queen.new(:W), Bishop.new(:W), Knight.new(:W), Castle.new(:W)]
 
     black_pawns = Array.new(8) { Pawn.new(:B) }
@@ -54,6 +54,23 @@ class Board
     x, y = pos
     board[y][x] = mark
   end
+
+  def render
+    puts "   #{("A".."H").to_a.join('  ')}"
+    1.upto(8) do |n|
+      puts "#{n}  #{board[n - 1].map do |pos|
+        pos ? pos.graphic : "□"
+      end.join("  ")}"
+    end
+  end
+
+  def inspect
+    puts
+    render
+    puts
+  end
+
+
 
 end
 
