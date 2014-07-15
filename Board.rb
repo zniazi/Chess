@@ -51,6 +51,8 @@ class Board
 
   def make_move(from, to)
     self[to], self[from] = self[from], nil
+    p piece.moves
+    p new_moves
   end
 
   def [](pos)

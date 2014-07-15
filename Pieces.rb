@@ -14,6 +14,7 @@ class Piece
   end
 
   def moves
+    x, y = position
   end
 end
 
