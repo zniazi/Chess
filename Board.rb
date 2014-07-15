@@ -47,8 +47,10 @@ class Board
     x, y = start_position
     new_moves = piece.moves.map { |dx, dy| [x + dx, y + dy] }
     new_moves = new_moves.select { |new_position| valid_position?(start_position, new_position) }
-    p piece.moves
-    p new_moves
+  end
+
+  def make_move(from, to)
+    self[to], self[from] = self[from], nil
   end
 
   def [](pos)
@@ -63,8 +65,8 @@ class Board
 
   def render
     puts "   #{("A".."H").to_a.join('  ')}"
-    1.upto(8) do |n|
-      puts "#{n}  #{board[n - 1].map do |pos|
+    0.upto(7) do |n|
+      puts "#{n}  #{board[n].map do |pos|
         pos ? pos.graphic : "□"
       end.join("  ")}"
     end

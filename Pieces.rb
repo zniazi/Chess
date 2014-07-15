@@ -14,12 +14,12 @@ class Piece
   end
 
   def moves
-    x, y = position
   end
 end
 
 class SteppingPiece < Piece
   def moves(delta_constants)
+    x, y = position
     delta_constants.map { |(dx, dy)| [x + dx, y + dy] }
   end
 end
@@ -27,6 +27,8 @@ end
 class SlidingPiece < Piece
   def moves(delta_constants)
     moves = []
+
+    x, y = position
 
     delta_constants.each do |(dx, dy)|
       1.upto(8) do |inc|
