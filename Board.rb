@@ -28,6 +28,7 @@ class Board
   end
 
   def same_color(start_pos, move_pos)
+    return false if self[move_pos].nil?
     self[start_pos].color == self[move_pos].color
   end
 
@@ -36,18 +37,22 @@ class Board
   end
 
   def valid_moves(start_position)
-    piece = @board[start_position]
-    piece.moves.select { |new_position| valid_position?(start_position, new_position) }
+    piece = self[start_position]
+    x, y = start_position
+    new_moves = piece.moves.map { |dx, dy| [x + dx, y + dy] }
+    new_moves = new_moves.select { |new_position| valid_position?(start_position, new_position) }
+    p piece.moves
+    p new_moves
   end
 
   def [](pos)
     x, y = pos
-    board[x][y]
+    board[y][x]
   end
 
   def []=(pos, mark)
     x, y = pos
-    board[x][y] = mark
+    board[y][x] = mark
   end
 
 end
