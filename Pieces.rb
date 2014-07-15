@@ -21,7 +21,9 @@ class SlidingPiece < Piece
     moves = []
     delta_constants.each do |(dx, dy)|
       1.upto(8) do |inc|
-        moves << [inc * dx + position[0], inc * dy + position[1]]
+        move = [inc * dx + position[0], inc * dy + position[1]]
+        break unless board.valid_position?(move)
+        moves << move
       end
     end
 
@@ -37,7 +39,7 @@ class Knight < SteppingPiece
       [dx += @position[0], dy += @position[1]]
     end
 
-    moves
+    moves.select { |move| board.valid_position?(move) }
   end
 
 end
@@ -79,6 +81,8 @@ end
 
 class Pawn < Piece
   PAWN_DELTAS = [[0, 1], [-1, 1], [1, 1]]
+
+  #pawn at top of board needs to move down
   def moves
     if attack_available?
       PAWN_DELTAS.map { |(dx, dy)| [position[0] + dx, position[1] + dy] }
@@ -92,6 +96,10 @@ class Pawn < Piece
     false
   end
 end
+
+# Add board.valid_moves(pos)
+# moves.select { |(x, y)| [x, y].all? { |coord| (0..7).include?(coord) } }
+
 
 
 
