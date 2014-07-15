@@ -1,8 +1,11 @@
 class Piece
+  HORIZONTAL_DELTAS = [[0,1], [0,-1], [-1,0], [1,0]]
+  DIAGONAL_DELTAS = [[-1,-1], [-1,1], [1,-1], [1,1]]
+
   attr_accessor :position
 
   def initialize
-    @position = [2,4]
+    @position = [4,4]
   end
 
   def moves
@@ -14,8 +17,6 @@ class SteppingPiece < Piece
 end
 
 class SlidingPiece < Piece
-  HORIZONTAL_DELTAS = [[0,1], [0,-1], [-1,0], [1,0]]
-  DIAGONAL_DELTAS = [[-1,-1], [-1,1], [1,-1], [1,1]]
 end
 
 class Knight < SteppingPiece
@@ -32,13 +33,29 @@ class Knight < SteppingPiece
 end
 
 class King < SteppingPiece
+
+  def moves
+    [].tap do |horizontals|
+      HORIZONTAL_DELTAS.each do |(dx,dy)|
+        horizontals << [position[0] + dx, position[1] + dy]
+      end
+    end.tap do |diagonals|
+      DIAGONAL_DELTAS.each do |(dx,dy)|
+        diagonals << [position[0] + dx, position[1] + dy]
+      end
+    end
+
+  end
+
 end
 
 class Bishop < SlidingPiece
   def moves
     moves = []
-    DIAGONAL_DELTAS.each do |delta|
-      8.times { |inc| moves << [inc * delta[0], inc * delta[1]] }
+    DIAGONAL_DELTAS.each do |(dx, dy)|
+      1.upto(8) do |inc|
+        moves << [inc * dx + position[0], inc * dy + position[1]]
+      end
     end
 
     moves.select { |(x, y)| [x, y].all? { |coord| (0..7).include?(coord) } }
