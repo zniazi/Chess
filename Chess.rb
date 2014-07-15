@@ -17,6 +17,16 @@ class SteppingPiece < Piece
 end
 
 class SlidingPiece < Piece
+  def moves(delta_constants)
+    moves = []
+    delta_constants.each do |(dx, dy)|
+      1.upto(8) do |inc|
+        moves << [inc * dx + position[0], inc * dy + position[1]]
+      end
+    end
+
+    moves.select { |(x, y)| [x, y].all? { |coord| (0..7).include?(coord) } }
+  end
 end
 
 class Knight < SteppingPiece
@@ -51,19 +61,18 @@ end
 
 class Bishop < SlidingPiece
   def moves
-    moves = []
-    DIAGONAL_DELTAS.each do |(dx, dy)|
-      1.upto(8) do |inc|
-        moves << [inc * dx + position[0], inc * dy + position[1]]
-      end
-    end
-
-    moves.select { |(x, y)| [x, y].all? { |coord| (0..7).include?(coord) } }
+    super(DIAGONAL_DELTAS)
   end
 end
 
 class Queen < SlidingPiece
+  def moves
+    super(DIAGONAL_DELTAS) + super(HORIZONTAL_DELTAS)
+  end
 end
 
 class Castle < SlidingPiece
+  def moves
+    super(HORIZONTAL_DELTAS)
+  end
 end
