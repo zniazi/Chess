@@ -1,11 +1,13 @@
+
+
 class Piece
   HORIZONTAL_DELTAS = [[0,1], [0,-1], [-1,0], [1,0]]
   DIAGONAL_DELTAS = [[-1,-1], [-1,1], [1,-1], [1,1]]
 
-  attr_accessor :position
+  attr_reader :color
 
-  def initialize
-    @position = [4,4]
+  def initialize(color)
+    @color = color
   end
 
   def moves
@@ -19,15 +21,15 @@ end
 class SlidingPiece < Piece
   def moves(delta_constants)
     moves = []
+
     delta_constants.each do |(dx, dy)|
       1.upto(8) do |inc|
-        move = [inc * dx + position[0], inc * dy + position[1]]
-        break unless board.valid_position?(move)
+        move = [inc * dx, inc * dy]
         moves << move
       end
     end
 
-    moves.select { |(x, y)| [x, y].all? { |coord| (0..7).include?(coord) } }
+    moves
   end
 end
 
@@ -35,11 +37,11 @@ class Knight < SteppingPiece
   KNIGHT_DELTAS = [[1,2],[1,-2],[-1,2],[-1,-2],[2,1],[2,-1],[-2,1],[-2,-1]]
 
   def moves
-    moves = KNIGHT_DELTAS.map do |(dx,dy)|
-      [dx += @position[0], dy += @position[1]]
-    end
+    # moves = KNIGHT_DELTAS.map do |(dx,dy)|
+#       [dx += @position[0], dy += @position[1]]
+#     end
 
-    moves.select { |move| board.valid_position?(move) }
+    KNIGHT_DELTAS
   end
 
 end
@@ -47,16 +49,16 @@ end
 class King < SteppingPiece
 
   def moves
-    [].tap do |horizontals|
-      HORIZONTAL_DELTAS.each do |(dx,dy)|
-        horizontals << [position[0] + dx, position[1] + dy]
-      end
-    end.tap do |diagonals|
-      DIAGONAL_DELTAS.each do |(dx,dy)|
-        diagonals << [position[0] + dx, position[1] + dy]
-      end
-    end
-
+    # [].tap do |horizontals|
+#       HORIZONTAL_DELTAS.each do |(dx,dy)|
+#         horizontals << [position[0] + dx, position[1] + dy]
+#       end
+#     end.tap do |diagonals|
+#       DIAGONAL_DELTAS.each do |(dx,dy)|
+#         diagonals << [position[0] + dx, position[1] + dy]
+#       end
+#     end
+    HORIZONTAL_DELTAS + DIAGONAL_DELTAS
   end
 
 end
@@ -84,17 +86,15 @@ class Pawn < Piece
 
   #pawn at top of board needs to move down
   def moves
-    if attack_available?
-      PAWN_DELTAS.map { |(dx, dy)| [position[0] + dx, position[1] + dy] }
-    else
-      dx, dy = PAWN_DELTAS.first[0], PAWN_DELTAS.first[1]
-      [position[0] + dx, position[1] + dy]
-    end
+    # if attack_available?
+#       PAWN_DELTAS.map { |(dx, dy)| [position[0] + dx, position[1] + dy] }
+#     else
+#       dx, dy = PAWN_DELTAS.first[0], PAWN_DELTAS.first[1]
+#       [position[0] + dx, position[1] + dy]
+#     end
+    PAWN_DELTAS
   end
 
-  def attack_available?
-    false
-  end
 end
 
 # Add board.valid_moves(pos)
