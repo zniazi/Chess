@@ -27,12 +27,17 @@ class Board
     @board = Board.place_pieces
   end
 
+  def same_color(start_pos, move_pos)
+    self[start_pos].color == self[move_pos].color
+  end
+
   def valid_position?(start_pos, move_pos)
     move_pos.all? { |coord| (0..7).include?(coord) } && !same_color(start_pos, move_pos)
   end
 
-  def same_color(start_pos, move_pos)
-    self[start_pos].color == self[move_pos].color
+  def valid_moves(start_position)
+    piece = @board[start_position]
+    piece.moves.select { |new_position| valid_position?(start_position, new_position) }
   end
 
   def [](pos)
