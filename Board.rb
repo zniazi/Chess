@@ -3,13 +3,19 @@ require "./Pieces.rb"
 class Board
 
   def self.place_pieces
-    blacks = [Castle.new(:B), Knight.new(:B), Bishop.new(:B), Queen.new(:B),
-      King.new(:B), Bishop.new(:B), Knight.new(:B), Castle.new(:B)]
-    whites = [Castle.new(:W), Knight.new(:W), Bishop.new(:W), King.new(:W),
-      Queen.new(:W), Bishop.new(:W), Knight.new(:W), Castle.new(:W)]
+    blacks = [Castle.new(:B, [0,0]), Knight.new(:B, [1,0]), Bishop.new(:B, [2,0]),
+              Queen.new(:B, [3, 0]), King.new(:B, [4, 0]), Bishop.new(:B, [5,0]),
+              Knight.new(:B, [6, 0]), Castle.new(:B, [7, 0])]
 
-    black_pawns = Array.new(8) { Pawn.new(:B) }
-    white_pawns = Array.new(8) { Pawn.new(:W) }
+    whites = [Castle.new(:W, [0, 7]), Knight.new(:W, [1, 7]), Bishop.new(:W, [2, 7]),
+              Queen.new(:W, [3,7]), King.new(:W, [4, 7]), Bishop.new(:W, [5, 7]),
+              Knight.new(:W, [6, 7]), Castle.new(:W, [7,7])]
+
+    black_pawns = Array.new(8) { Pawn.new(:B, [0, 1]) }
+    1.upto(8) { |i| black_pawns[i - 1].position = [i - 1, 1] }
+
+    white_pawns = Array.new(8) { Pawn.new(:W, [0, 6]) }
+    1.upto(8) { |i| white_pawns[i - 1].position = [i - 1, 6] }
 
     board = Array.new(8) { Array.new(8) }
 
@@ -70,7 +76,9 @@ class Board
     puts
   end
 
+  def check(color)
 
+  end
 
 end
 
