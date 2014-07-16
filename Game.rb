@@ -6,6 +6,8 @@ end
 class InvalidMoveError < StandardError
 end
 
+class LeftInCheckError < StandardError
+end
 
 class Game
 
@@ -69,8 +71,13 @@ class Player
       letter, number = gets.chomp.split("")
       to_x, to_y = letters.index(letter), numbers.index(number)
       raise InvalidMoveError unless valid_moves.include?("#{letter}#{number}")
+      raise LeftInCheckError if @board.left_in_check?([from_x, from_y], [to_x, to_y])
     rescue InvalidMoveError
       puts "Invalid move!"
+      retry
+    rescue LeftInCheckError
+      puts "You're exposing your King."
+      get_move
       retry
     end
 

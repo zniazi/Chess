@@ -5,7 +5,7 @@ class Board
 
   def self.place_pieces
     blacks = [Castle.new(:B, [0,0], ), Knight.new(:B, [1,0]), Bishop.new(:B, [2,0]),
-              Queen.new(:B, [3, 0]), King.new(:B, [4, 0]), Bishop.new(:B, [5,0]),
+              King.new(:B, [3, 0]), Queen.new(:B, [4, 0]), Bishop.new(:B, [5,0]),
               Knight.new(:B, [6, 0]), Castle.new(:B, [7, 0])]
 
     whites = [Castle.new(:W, [0, 7]), Knight.new(:W, [1, 7]), Bishop.new(:W, [2, 7]),
@@ -43,25 +43,6 @@ class Board
   def valid_position?(start_pos, move_pos)
     (move_pos.all? { |coord| (0..7).include?(coord) }) && (!same_color(start_pos, move_pos))
   end
-
-  # def valid_moves(start_position)
-#     piece = self[start_position]
-#     x, y = start_position
-#
-#     filter_new_moves(start_position) if piece.is_a?(SlidingPiece)
-#
-#     new_moves = piece.moves.select { |new_position| valid_position?(start_position, new_position) }
-#
-#     new_pawn_moves = piece.moves.map { |dx, dy| [x + dx, y + dy] } if self[start_position].is_a?(Pawn)
-#     if self[start_position].is_a?(Pawn)
-#       new_pawn_moves = [new_pawn_moves.first] + new_pawn_moves.last(2).select do |position|
-#          !self[position].nil? && self[position].color != self[start_position].color
-#       end
-#       return new_pawn_moves
-#     end
-#
-#     new_moves
-#   end
 
   def valid_moves(start_position)
     piece = self[start_position]
@@ -113,6 +94,21 @@ class Board
     # p new_moves
   end
 
+  def make_safe_move(from, to)
+    piece1, piece2 = self[from], self[to]
+    self[from].position = to
+    self[to], self[from] = self[from], nil
+    in_check = in_check?(piece1.color)
+    self[from], self[to] = piece1, piece2
+    self[from].position = from
+
+    in_check
+  end
+
+  def left_in_check?(start_pos, move_pos)
+    make_safe_move(start_pos, move_pos)
+  end
+
   def [](pos)
     x, y = pos
     return nil if y > 7
@@ -148,8 +144,22 @@ class Board
     puts
   end
 
-  def check(color)
+  def in_check?(color)
+    opposing_piece_moves = []
+    king = nil
+    board.each do |row|
+      row.each do |piece|
+        king = piece if piece.is_a?(King) && piece.color == color
+        if piece.is_a?(Piece) && piece.color != color
+          opposing_piece_moves << valid_moves(piece.position)
+        end
+      end
+    end
+    opposing_piece_moves.each do |move|
+      return true if move.any? { |pos| pos == king.position }
+    end
 
+    false
   end
 
 end
