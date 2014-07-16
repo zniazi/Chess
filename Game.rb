@@ -6,13 +6,12 @@ end
 class InvalidMoveError < StandardError
 end
 
-require 'Board.rb'
 
 class Game
 
   attr_reader :player1, :player2, :board
 
-  def initialize(player1, player2)
+  def initialize
     @board = Board.new
     @player1 = Player.new(:W, @board)
     @player2 = Player.new(:B, @board)
@@ -26,11 +25,8 @@ class Game
       from, to = player1.get_move
       board.make_move(from, to)
       board.render
-      player2.get_move
+      from, to = player2.get_move
       board.make_move(from, to)
-      player1.move
-      board.render
-      player2.move
     end
   end
 
@@ -81,7 +77,11 @@ class Player
     [[from_x, from_y], [to_x, to_y]]
   end
 end
-    board.checkmate? # Need to write checkmate method
-  end
+#
+# load 'Pieces.rb'
+# load 'Board.rb'
+# load 'Game.rb'
+# Game.new.play
 
-end
+
+

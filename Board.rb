@@ -1,9 +1,10 @@
 require "./Pieces.rb"
+require "debugger"
 
 class Board
 
   def self.place_pieces
-    blacks = [Castle.new(:B, [0,0]), Knight.new(:B, [1,0]), Bishop.new(:B, [2,0]),
+    blacks = [Castle.new(:B, [0,0], ), Knight.new(:B, [1,0]), Bishop.new(:B, [2,0]),
               Queen.new(:B, [3, 0]), King.new(:B, [4, 0]), Bishop.new(:B, [5,0]),
               Knight.new(:B, [6, 0]), Castle.new(:B, [7, 0])]
 
@@ -27,10 +28,11 @@ class Board
     board
   end
 
-  attr_accessor :board
+  attr_accessor :board, :captured_pieces
 
   def initialize
     @board = Board.place_pieces
+    @captured_pieces = []
   end
 
   def same_color(start_pos, move_pos)
@@ -39,39 +41,105 @@ class Board
   end
 
   def valid_position?(start_pos, move_pos)
-    move_pos.all? { |coord| (0..7).include?(coord) } && !same_color(start_pos, move_pos)
+    (move_pos.all? { |coord| (0..7).include?(coord) }) && (!same_color(start_pos, move_pos))
   end
+
+  # def valid_moves(start_position)
+#     piece = self[start_position]
+#     x, y = start_position
+#
+#     filter_new_moves(start_position) if piece.is_a?(SlidingPiece)
+#
+#     new_moves = piece.moves.select { |new_position| valid_position?(start_position, new_position) }
+#
+#     new_pawn_moves = piece.moves.map { |dx, dy| [x + dx, y + dy] } if self[start_position].is_a?(Pawn)
+#     if self[start_position].is_a?(Pawn)
+#       new_pawn_moves = [new_pawn_moves.first] + new_pawn_moves.last(2).select do |position|
+#          !self[position].nil? && self[position].color != self[start_position].color
+#       end
+#       return new_pawn_moves
+#     end
+#
+#     new_moves
+#   end
 
   def valid_moves(start_position)
     piece = self[start_position]
-    x, y = start_position
-    new_moves = piece.moves.map { |dx, dy| [x + dx, y + dy] }
-    new_moves = new_moves.select { |new_position| valid_position?(start_position, new_position) }
+
+    if piece.is_a?(SlidingPiece)
+      new_moves = filter_sliding_moves(piece).select do |new_position|
+        valid_position?(start_position, new_position)
+      end
+    elsif piece.is_a?(Pawn)
+      new_moves = piece.moves.select { |new_position| valid_position?(start_position, new_position) }
+      new_moves = [new_moves.first] + new_moves.last(2).select do |position|
+         !self[position].nil?
+       end
+    else # All other pieces
+      new_moves = piece.moves.select do |new_position|
+        valid_position?(start_position, new_position)
+      end
+    end
+
+    new_moves
   end
 
+  def filter_sliding_moves(piece)
+    valid_moves = []
+
+    piece.moves.each do |path|
+      path.each do |pos|
+        if self[pos] && self[pos].color == piece.color
+          break
+        elsif self[pos] && self[pos].color != piece.color
+          valid_moves << pos
+          break
+        else
+          valid_moves << pos
+        end
+      end
+    end
+
+    valid_moves
+  end
+
+
   def make_move(from, to)
+    captured_pieces << self[to] if self[to]
+    self[from].position = to
     self[to], self[from] = self[from], nil
-    p piece.moves
-    p new_moves
+    # capture_piece(self[to])
+    # p piece.moves
+    # p new_moves
   end
 
   def [](pos)
     x, y = pos
+    return nil if y > 7
     board[y][x]
   end
 
   def []=(pos, mark)
     x, y = pos
+    return nil if y > 7
     board[y][x] = mark
   end
 
   def render
+    puts "Black has captured: #{captured_pieces.select do |piece|
+                              piece.color == :W
+                              end.map { |piece| piece.graphic } }"
+
     puts "   #{("A".."H").to_a.join('  ')}"
     0.upto(7) do |n|
       puts "#{n}  #{board[n].map do |pos|
         pos ? pos.graphic : "□"
       end.join("  ")}"
     end
+
+    puts "White has captured: #{captured_pieces.select do |piece|
+                              piece.color == :B
+                              end.map { |piece| piece.graphic } }"
   end
 
   def inspect

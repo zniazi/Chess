@@ -14,31 +14,34 @@ class Piece
   end
 
   def moves
-    x, y = position
   end
 end
 
 class SteppingPiece < Piece
   def moves(delta_constants)
     x, y = position
+    p delta_constants.map { |(dx, dy)| [x + dx, y + dy] }
     delta_constants.map { |(dx, dy)| [x + dx, y + dy] }
   end
 end
 
 class SlidingPiece < Piece
-  def moves(delta_constants)
-    moves = []
-
+  def moves(delta_constant)
+    paths = []
     x, y = position
 
-    delta_constants.each do |(dx, dy)|
+    delta_constant.each do |(dx, dy)|
+      path = []
       1.upto(8) do |inc|
         move = [inc * dx + x, inc * dy + y]
-        moves << move
+        path << move
       end
-    end
 
-    moves
+      paths << path
+    end
+    p paths
+
+    paths
   end
 end
 
@@ -115,11 +118,13 @@ class Pawn < Piece
   end
 
   def moves
-    self.color == :B ? PAWN_DELTAS : PAWN_DELTAS.map { |x, y| [x, y * -1] }
+    # debugger
+    x, y = position
+    pawn_moves = PAWN_DELTAS.map { |dx, dy| [x + dx, y + dy] }
+    self.color == :B ? pawn_moves : pawn_moves.map { |x, y| [x, y - 2] }
   end
 
 end
-
 
 
 
