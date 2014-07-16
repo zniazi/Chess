@@ -184,10 +184,3 @@ class Board
   end
 
 end
-
-
-
-
-
-
-
