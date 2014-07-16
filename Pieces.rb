@@ -20,8 +20,7 @@ end
 class SteppingPiece < Piece
   def moves(delta_constants)
     x, y = position
-    p delta_constants.map { |(dx, dy)| [x + dx, y + dy] }
-    delta_constants.map { |(dx, dy)| [x + dx, y + dy] }
+      delta_constants.map { |(dx, dy)| [x + dx, y + dy] }
   end
 end
 
@@ -39,7 +38,6 @@ class SlidingPiece < Piece
 
       paths << path
     end
-    p paths
 
     paths
   end
@@ -112,16 +110,26 @@ end
 class Pawn < Piece
   PAWN_DELTAS = [[0, 1], [-1, 1], [1, 1]]
 
+  attr_reader :initial_position
+  attr_accessor :first_move
   def initialize(color, position)
     super(color, position)
     @graphic = (color == :W) ? "♙" : "♟"
+    @first_move = true
   end
 
   def moves
-    # debugger
     x, y = position
-    pawn_moves = PAWN_DELTAS.map { |dx, dy| [x + dx, y + dy] }
-    self.color == :B ? pawn_moves : pawn_moves.map { |x, y| [x, y - 2] }
+    self.color == :B ? multiplier = 1 : multiplier = -1
+
+    if self.first_move
+      pawn_deltas = PAWN_DELTAS + [[0,2]]
+      pawn_moves = pawn_deltas.map { |dx, dy| [x + dx, y + (multiplier * dy)] }
+    else
+      pawn_moves = PAWN_DELTAS.map { |dx, dy| [x + dx, y + (multiplier * dy)] }
+    end
+
+    pawn_moves
   end
 
 end

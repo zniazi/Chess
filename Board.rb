@@ -5,7 +5,7 @@ class Board
 
   def self.place_pieces
     blacks = [Castle.new(:B, [0,0], ), Knight.new(:B, [1,0]), Bishop.new(:B, [2,0]),
-              King.new(:B, [3, 0]), Queen.new(:B, [4, 0]), Bishop.new(:B, [5,0]),
+              Queen.new(:B, [3, 0]), King.new(:B, [4, 0]), Bishop.new(:B, [5,0]),
               Knight.new(:B, [6, 0]), Castle.new(:B, [7, 0])]
 
     whites = [Castle.new(:W, [0, 7]), Knight.new(:W, [1, 7]), Bishop.new(:W, [2, 7]),
@@ -53,9 +53,12 @@ class Board
       end
     elsif piece.is_a?(Pawn)
       new_moves = piece.moves.select { |new_position| valid_position?(start_position, new_position) }
-      new_moves = [new_moves.first] + new_moves.last(2).select do |position|
+      movable_moves = [new_moves.first]
+      movable_moves += [new_moves.last] if piece.moves.length == 4
+      movable_moves += new_moves[1..2].select do |position|
          !self[position].nil?
        end
+    new_moves = movable_moves
     else # All other pieces
       new_moves = piece.moves.select do |new_position|
         valid_position?(start_position, new_position)
@@ -89,6 +92,7 @@ class Board
     captured_pieces << self[to] if self[to]
     self[from].position = to
     self[to], self[from] = self[from], nil
+    self[to].first_move = false if self[to].is_a?(Pawn)
     # capture_piece(self[to])
     # p piece.moves
     # p new_moves
