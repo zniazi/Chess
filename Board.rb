@@ -162,6 +162,28 @@ class Board
     false
   end
 
+  def checkmate?(color)
+    color_pieces = []
+    board.each do |row|
+      row.each do |piece|
+        color_pieces << piece if piece.is_a?(Piece) && piece.color == color
+      end
+    end
+
+    color_pieces.each do |piece|
+      valid_moves(piece.position).each do |move|
+        return false unless left_in_check?(piece.position, move)
+      end
+    end
+
+    true
+  end
+
 end
+
+
+
+
+
 
 

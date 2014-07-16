@@ -26,14 +26,18 @@ class Game
       board.render
       from, to = player1.get_move
       board.make_move(from, to)
+      puts "Player 2 you are in check" if board.in_check?(player2.color)
       board.render
       from, to = player2.get_move
       board.make_move(from, to)
+      puts "Player 1 you are in check" if board.in_check?(player1.color)
     end
+
+    puts "Game over"
   end
 
   def game_over?
-    #board.checkmate? # Need to write checkmate method
+    board.checkmate?(:W) || board.checkmate?(:B)
   end
 
 end
